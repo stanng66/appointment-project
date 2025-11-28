@@ -34,6 +34,7 @@ for (let i = 0; i < calendarDays.length; i++) {
    
 }
 
+// Functionality for adding/editing events form
 const goBackButton = document.getElementById("goBack");
 const addEventForm = document.getElementById("addEventForm");
 const calendar = document.getElementById("calendar");
@@ -48,3 +49,18 @@ function goBackEvent(e) {
 }
 
 goBackButton.addEventListener("click", goBackEvent);
+
+
+// Functionality for going to the add events page when clicking an empty day
+function addButtonClick(e) {
+    console.log("triggered addEvent");
+    calendar.setAttribute("hidden", "");
+    eventsPage.removeAttribute("hidden");
+}
+
+for (let day of calendarDays) {
+    let addButton = day.querySelector(".add-event-button");
+    if (addButton) {
+        addButton.addEventListener("click", addButtonClick);
+    }
+}
