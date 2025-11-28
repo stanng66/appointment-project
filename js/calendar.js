@@ -110,7 +110,7 @@ function addEvent() {
     const event = {
         id: eventIdCounter++,
         date: date,
-		time: time;
+		time: time,
         title: title,
         description: description
     };
