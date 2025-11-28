@@ -72,11 +72,22 @@ let events = [];
 // Store event input fields and reminder list
 let eventDateInput = document.getElementById("eventDate");
 let eventTitleInput = document.getElementById("eventTitle");
+let eventTimeInput = document.getElementById("eventTime");
 let eventDescriptionInput = document.getElementById("eventDescription");
 let reminderList = document.getElementById("reminderList");
 
 // Counter to generate unique event IDs
 let eventIdCounter = 1;
+
+// Update calendar dots function - currently TODO
+function updateReminderList() {
+	return; // TODO
+}
+
+// Update reminder list function - currently TODO
+function updateReminderList() {
+	return; // TODO
+}
 
 // Function to add events
 function addEvent() {
@@ -87,6 +98,7 @@ function addEvent() {
 
 	let date = eventDateInput.value;
 	let title = eventTitleInput.value;
+	let time = eventTimeInput.value;
 	let description = eventDescriptionInput.value;
 
     if (!date || !title) {
@@ -98,6 +110,7 @@ function addEvent() {
     const event = {
         id: eventIdCounter++,
         date: date,
+		time: time;
         title: title,
         description: description
     };
@@ -107,6 +120,7 @@ function addEvent() {
     // Reset the form
     eventDateInput.value = "";
     eventTitleInput.value = "";
+    eventTimeInput.value = "";
     eventDescriptionInput.value = "";
 
     updateCalendarDots();
