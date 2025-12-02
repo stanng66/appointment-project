@@ -228,3 +228,46 @@ function deleteEvent(eventId) {
     updateCalendarDots();
     updateReminderList();
 }
+
+// Function to show notification banner
+function showNotification(message) {
+    const banner = document.getElementById("notificationBanner");
+    const msg = document.getElementById("bannerMessage");
+
+    msg.textContent = message;
+    banner.removeAttribute("hidden");
+
+    setTimeout(() => {
+        banner.setAttribute("hidden", "");
+    }, 5000);
+}
+
+// notification continue here
+// Function to check for existing/upcoming events in the events array
+function checkUpcomingEvents() {
+    const now = new Date();
+
+    events.forEach(event => {
+        const eventDateTime = new Date( // Create Date object for event
+            year,
+            event.date.month,
+            event.date.day,
+            Number(event.time.split(":")[0]),
+            Number(event.time.split(":")[1])
+        );
+
+        const diffMs = eventDateTime - now; // Difference in milliseconds
+        const diffMinutes = Math.floor(diffMs / 60000); // Convert to minutes
+
+        if (diffMinutes === 10) {
+            showNotification(`"${event.title}" starts in 10 minutes`); // 10-minute reminder
+        }
+
+        if (diffMinutes === 0) {
+            showNotification(`"${event.title}" is starting now`); // Event starting now
+        }
+    });
+}
+
+setInterval(checkUpcomingEvents, 60000);
+checkUpcomingEvents();
