@@ -22,23 +22,23 @@ switch(month) {
     case 10: monthName = "November"; break; // November
     case 11: monthName = "December"; break; // December
 }
-monthDisp.innerText = `${monthName}, ${year}`;
+monthDisp.innerText = `${monthName} ${year}`;
 
 const calendarDays = document.getElementsByClassName("calendar-day");
 for (let i = 0; i < calendarDays.length; i++) {
     const day = calendarDays[i];
-    
+
     if (i < dayWeek) { day.innerHTML = ""; day.setAttribute("disabled", "");
 
     } else if (i-dayWeek < daysInMonth){
         day.innerHTML = ((i-dayWeek)+1) + "<button class='add-event-button'></button>";
         day.setAttribute("day", i-dayWeek +1);
-        
+
         if(i-dayWeek+1 == today.getDate()) {
             day.classList.add("today");
         }
     } else { day.innerHTML = ""; day.setAttribute("disabled", ""); }
-   
+
 }
 
 // Functionality for adding/editing events form
@@ -79,6 +79,8 @@ for (let day of calendarDays) {
 
 // Define an array to store events
 let events = [];
+loadEvents();
+
 
 // Store event input fields and reminder list
 //let eventDateInput = document.getElementById("eventDate");
@@ -88,43 +90,38 @@ let eventDescriptionInput = document.getElementById("eventDescription");
 let eventSubmitInput = document.getElementById("submitAddEvent");
 let reminderList = document.getElementById("reminderList");
 
-// Counter to generate unique event IDs
-let eventIdCounter = 1;
-
-// Update calendar dots function - currently TODO
-function updateCalendarDots() {
-	return; // TODO
-}
+// Counter to generate unique event IDs. Accommodate for loaded events to prevent discrepancies in IDs
+let eventIdCounter = events.length +1;
 
 function updateCalendarItems() {
-    
+
     // Remove all existing events from the calendar page
     for (let event of document.getElementsByClassName("calendar-event")) {
         event.remove();
         console.log("removed event to update calendar");
     }
-    
+
     // Loop events table to add HTML elements in calendar page accordingly
     let calendarDays = document.getElementsByClassName("calendar-day");
-    
+
     for (let i = 0; i < calendarDays.length; i++) {
         let day = calendarDays[i];
         if (i < dayWeek) { day.innerHTML = ""; day.setAttribute("disabled", ""); }
-        
+
         else if (i-dayWeek < daysInMonth) {
             day.innerHTML = ((i-dayWeek)+1);
             day.setAttribute("day", i-dayWeek+1);
         } else { day.innerHTML = ""; day.setAttribute("disabled", ""); }
-        
+
         day.setAttribute("extraHTML", "");
     }
-    
+
     for (let event of events) {
-        
+
         let calendarDays2 = Array.from(calendarDays);
         calendarDays2 = calendarDays2.filter((value) => value.getAttribute("day") == event.date.day);
-        console.log(calendarDays2);
-        
+        //console.log(calendarDays2);
+
         if (calendarDays2.length > 0) {
             let currentDay = calendarDays2[0];
             currentDay.setAttribute("extraHTML", currentDay.getAttribute("extraHTML") + `<button class='calendar-event'>${event.title}</button>`);
@@ -133,7 +130,7 @@ function updateCalendarItems() {
             console.log("nothing in calendarDays2 filtered");
         }
     }
-    
+
     for (let day of calendarDays) {
         let disabled = day.getAttribute("disabled");
         if (disabled == null) {
@@ -142,7 +139,7 @@ function updateCalendarItems() {
             day.innerHTML += day.getAttribute("extraHTML");
             day.querySelector(".add-event-button").addEventListener("click", addButtonClick);
         }
-        
+
         day.removeAttribute("extraHTML");
     }
 }
@@ -188,8 +185,10 @@ function addEvent() {
 
     console.log(event)
     updateCalendarItems();
-    updateCalendarDots();
+
+    //updateCalendarDots();
     updateReminderList();
+    saveEvents();
 }
 
 
@@ -199,6 +198,21 @@ function addTitleUpdate() {
     }
     else {
         eventSubmitInput.setAttribute("disabled", "");
+    }
+}
+function saveEvents() {
+    localStorage.setItem("events", JSON.stringify(events));
+    console.log("called saveEvents()");
+}
+
+function loadEvents() {
+    
+    let saved = localStorage.getItem("events");
+    //console.log(saved);
+    
+    if (saved != null) {
+        events = JSON.parse(saved);
+        console.log("Loaded events")
     }
 }
 
@@ -223,8 +237,9 @@ addEventForm.addEventListener("submit", function(e) {
 
 // Function to delete an event by ID
 function deleteEvent(eventId) {
-	 events = events.filter(event => event.id !== id);
-
+    
+	events = events.filter(event => event.id !== eventId);
+    saveEvents();
     updateCalendarDots();
     updateReminderList();
 }
@@ -256,18 +271,20 @@ function checkUpcomingEvents() {
             Number(event.time.split(":")[1])
         );
 
-        const diffMs = eventDateTime - now; // Difference in milliseconds
+        const diffMs = eventDateTime.getTime() - now.getTime(); // Difference in milliseconds
         const diffMinutes = Math.floor(diffMs / 60000); // Convert to minutes
+        //console.log(diffMs);
+        //console.log(diffMinutes);
 
-        if (diffMinutes === 10) {
-            showNotification(`"${event.title}" starts in 10 minutes`); // 10-minute reminder
+        if (diffMinutes <= 10 && diffMinutes > 2) {
+            showNotification(`"${event.title}" starts in ${diffMinutes} minutes`); // 10-minute reminder
         }
-
-        if (diffMinutes === 0) {
+        else if ( (diffMinutes >= 0 && diffMinutes <= 2) || (diffMinutes < 0 && diffMinutes >= -2)) {
             showNotification(`"${event.title}" is starting now`); // Event starting now
         }
     });
 }
 
+updateCalendarItems();
 setInterval(checkUpcomingEvents, 60000);
 checkUpcomingEvents();
