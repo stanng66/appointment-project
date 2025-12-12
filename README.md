@@ -20,7 +20,10 @@ Click this preview image to watch the video:
 
 
 ## Installation Instructions
-
+To install, you need to have the following files in your website:
+1. All files in the 'js' folder
+2. index.html
+3. styles.css
 
 ## The Team
 
