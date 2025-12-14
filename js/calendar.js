@@ -137,6 +137,7 @@ function editButtonClick(e) {
     let event = events.find(value => value.id == id);
     
     editEventModal.setAttribute("editing", "");
+    editEventModal.setAttribute("eventId", id);
     eventPageLabel.innerText = `Edit Event for ${monthName} ${day}`;
     addEventForm.reset();
     
@@ -232,17 +233,27 @@ function addEvent() {
         alert("Title and time required");
         return;
     }
-
-    // Create a new event object
-    const event = {
-        id: eventIdCounter++,
-        date: {day: day, month: month},
-		time: time,
-        title: title,
-        description: description
-    };
-
-    events.push(event); // Store event
+    
+    if (editEventModal.hasAttribute("editing")) {
+        let id = editEventModal.getAttribute("eventId");
+        id = parseInt(id);
+        let event = events.find(value => value.id == id);
+        event.time = time;
+        event.title = title;
+        event.description = description;
+        
+    } else {
+        // Create a new event object
+        const event = {
+            id: eventIdCounter++,
+            date: {day: day, month: month},
+            time: time,
+            title: title,
+            description: description
+        };
+        
+        events.push(event); // Store event
+    }
 
     // Reset the form
     eventTitleInput.value = "";
@@ -301,9 +312,14 @@ function addTimeUpdate() {
 
 eventTitleInput.addEventListener("input", addTitleUpdate);
 eventTimeInput.addEventListener("input", addTimeUpdate);
+
 addEventForm.addEventListener("submit", function(e) {
     e.preventDefault();
-    addEvent();
+    if (editEventModal.hasAttribute("editing")) {
+        editEvent();
+    } else {
+        addEvent();
+    }
     editEventModal.setAttribute("hidden", "");
     addEventForm.reset();
 })
