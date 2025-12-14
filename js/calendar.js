@@ -7,7 +7,8 @@ const daysInMonth = new Date(year, month+1, 0).getDate() // i'll be honest, idk
 
 let monthName = '';
 const monthDisp = document.getElementById("Month");
-console.log(month)
+console.log(month);
+
 switch(month) {
     case 0: monthName = "January"; break; // Jan
     case 1: monthName = "Feburary"; break; // Feburary
@@ -22,6 +23,7 @@ switch(month) {
     case 10: monthName = "November"; break; // November
     case 11: monthName = "December"; break; // December
 }
+
 monthDisp.innerText = `${monthName} ${year}`;
 
 const calendarDays = document.getElementsByClassName("calendar-day");
@@ -56,7 +58,16 @@ const eventModal = document.getElementById("eventModal");
 const eventModalName = document.getElementById("modalEventName");
 const eventModalTime = document.getElementById("modalEventTime");
 const eventModalDescription = document.getElementById("modalEventDescription");
+const eventPageLabel = document.getElementById("eventsPageLabel");
 //const addEventContainer = document.getElementById("addEventContainer");
+
+// Store event input fields and reminder list
+//let eventDateInput = document.getElementById("eventDate");
+let eventTitleInput = document.getElementById("editEventName");
+let eventTimeInput = document.getElementById("editEventTime");
+let eventDescriptionInput = document.getElementById("editEventDescription");
+let eventSubmitInput = document.getElementById("saveEditEventBtn");
+let reminderList = document.getElementById("reminderList");
 
 function goBackEvent(e) {
     console.log("goBack triggered");
@@ -74,10 +85,9 @@ closeEditModal.addEventListener("click", goBackEvent);
 // Functionality for going to the add events page when clicking an empty day
 function addButtonClick(e) {
     let day = e.target.parentElement.getAttribute("day");
-    let eventPageLabel = document.getElementById("eventsPageLabel");
-    eventPageLabel.innerText = `Add/Edit Event for ${monthName} ${day}`
+    eventPageLabel.innerText = `Add Event for ${monthName} ${day}`;
     editEventModal.setAttribute("day", day);
-
+    editEventModal.removeAttribute("editing");
     console.log("triggered addEvent");
     //calendar.setAttribute("hidden", "");
     editEventModal.removeAttribute("hidden");
@@ -120,20 +130,33 @@ function deleteButtonClick(e) {
     }
 }
 
+function editButtonClick(e) {
+    let id = eventModal.getAttribute("eventId");
+    id = parseInt(id);
+    
+    let event = events.find(value => value.id == id);
+    
+    editEventModal.setAttribute("editing", "");
+    eventPageLabel.innerText = `Edit Event for ${monthName} ${day}`;
+    addEventForm.reset();
+    
+    eventTitleInput.value = event.title;
+    eventDescriptionInput.value = event.description;
+    eventTimeInput.value = event.time;
+    
+    addTitleUpdate();
+    addTimeUpdate();
+    
+    editEventModal.removeAttribute("hidden");
+    eventModal.setAttribute("hidden");
+    
+}
+
 deleteEventBtn.addEventListener("click", deleteButtonClick);
 
 // Define an array to store events
 let events = [];
 loadEvents();
-
-
-// Store event input fields and reminder list
-//let eventDateInput = document.getElementById("eventDate");
-let eventTitleInput = document.getElementById("editEventName");
-let eventTimeInput = document.getElementById("editEventTime");
-let eventDescriptionInput = document.getElementById("editEventDescription");
-let eventSubmitInput = document.getElementById("saveEditEventBtn");
-let reminderList = document.getElementById("reminderList");
 
 // Counter to generate unique event IDs. Accommodate for loaded events to prevent discrepancies in IDs
 let eventIdCounter = events.length +1;
@@ -191,11 +214,6 @@ function updateCalendarItems() {
     for (let event of document.getElementsByClassName("calendar-event")) {
         event.addEventListener("click", eventButtonClick);
     }
-}
-
-// Update reminder list function - currently TODO
-function updateReminderList() {
-	return; // TODO
 }
 
 // Function to add events
