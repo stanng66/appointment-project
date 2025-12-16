@@ -21,7 +21,7 @@ There are two main features:
 ### Demonstration Video
 Click this preview image to watch the video:
 
-[![Watch the video](assets/image.png)](https://github.com/yes-2875/appointment-project/raw/main/assets/Screencast_20251201_104343.mp4)
+[![Watch the video](https://img.youtube.com/vi/RgPK6yPTZjQ/0.jpg)](https://www.youtube.com/watch?v=RgPK6yPTZjQ)
 
 
 ## Installation Instructions
